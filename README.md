@@ -20,7 +20,7 @@ su password
 
 To use it just ./makelive
 
-Give it time and it will make a live bootable iso of your current install.
+Give it time and it will make a live bootable iso of your current install directly into your home folder.
 
 Enjoy!
 
