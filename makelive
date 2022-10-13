@@ -1,0 +1,35 @@
+#!/bin/bash
+# Will create live iso from currently installed Debian system
+#
+# Make sure these are installed before starting this script
+# Depends: rsync live-boot systemd-sysv debootstrap squashfs-tools xorriso isolinux syslinux-efi grub-pc-bin grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools resolvconf 
+# 
+# Run script as root or under su in terminal
+# Variables for computer name, iso name and volume label
+HOSTNAME=debian-live
+ISONAME=debian-live
+LABEL=DEBLIVE
+mkdir -p $HOME/LIVE_BOOT $HOME/LIVE_BOOT/chroot &&
+rsync -aAXv --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,$HOME/LIVE_BOOT/*} /* $HOME/LIVE_BOOT/chroot &&
+printf "" > $HOME/LIVE_BOOT/chroot/etc/fstab && printf "" > $HOME/LIVE_BOOT/chroot/etc/resolv.conf &&
+echo "$HOSTNAME" > $HOME/LIVE_BOOT/chroot/etc/hostname &&
+mkdir -p $HOME/LIVE_BOOT/{staging/{EFI/BOOT,boot/grub/x86_64-efi,isolinux,live},tmp} &&
+mksquashfs $HOME/LIVE_BOOT/chroot $HOME/LIVE_BOOT/staging/live/filesystem.squashfs -e boot &&
+cp $HOME/LIVE_BOOT/chroot/boot/vmlinuz-* $HOME/LIVE_BOOT/staging/live/vmlinuz && cp $HOME/LIVE_BOOT/chroot/boot/initrd.img-* $HOME/LIVE_BOOT/staging/live/initrd &&
+touch $HOME/LIVE_BOOT/staging/isolinux/isolinux.cfg  &&
+printf "UI vesamenu.c32\n\nMENU TITLE Boot Menu\nDEFAULT linux\nTIMEOUT 600\nMENU RESOLUTION 640 480\nMENU COLOR border       30;44   #40ffffff #a0000000 std\nMENU COLOR title        1;36;44 #9033ccff #a0000000 std\nMENU COLOR sel          7;37;40 #e0ffffff #20ffffff all\nMENU COLOR unsel        37;44   #50ffffff #a0000000 std\nMENU COLOR help         37;40   #c0ffffff #a0000000 std\nMENU COLOR timeout_msg  37;40   #80ffffff #00000000 std\nMENU COLOR timeout      1;37;40 #c0ffffff #00000000 std\nMENU COLOR msg07        37;40   #90ffffff #a0000000 std\nMENU COLOR tabmsg       31;40   #30ffffff #00000000 std\n\nLABEL linux\n   MENU LABEL Debian Live [BIOS/ISOLINUX]\n   MENU DEFAULT\n   KERNEL /live/vmlinuz\n   APPEND initrd=/live/initrd boot=live\n\n   LABEL linux\n   MENU LABEL Debian Live [BIOS/ISOLINUX] (nomodeset)\n   MENU DEFAULT\n   KERNEL /live/vmlinuz\n   APPEND initrd=/live/initrd boot=live nomodeset\nEOF" > $HOME/LIVE_BOOT/staging/isolinux/isolinux.cfg &&
+touch $HOME/LIVE_BOOT/staging/boot/grub/grub.cfg &&
+printf "insmod part_gpt\ninsmod part_msdos\ninsmod fat\ninsmod iso9660\n\ninsmod all_video\ninsmod font\n\nset default=\"0\"\nset timeout=30\n\n# If X has issues finding screens, experiment with/without nomodeset.\n\nmenuentry \"Debian Live [EFI/GRUB]\" {\n    search --no-floppy --set=root --label $LABEL\n    linux (\$root)/live/vmlinuz boot=live\n    initrd (\$root)/live/initrd\n}\n\nmenuentry \"Debian Live [EFI/GRUB] (nomodeset)\" {\n    search --no-floppy --set=root --label $LABEL\n    linux (\$root)/live/vmlinuz boot=live nomodeset\n    initrd (\$root)/live/initrd\n}\nEOF" > $HOME/LIVE_BOOT/staging/boot/grub/grub.cfg &&
+cp $HOME/LIVE_BOOT/staging/boot/grub/grub.cfg $HOME/LIVE_BOOT/staging/EFI/BOOT/ &&
+touch $HOME/LIVE_BOOT/tmp/grub-embed.cfg &&
+printf "if ! [ -d \"\$cmdpath\" ]; then\n    # On some firmware, GRUB has a wrong cmdpath when booted from an optical disc.\n    # https://gitlab.archlinux.org/archlinux/archiso/-/issues/183\n    if regexp --set=1:isodevice '^(\([^)]+\))\/?[Ee][Ff][Ii]\/[Bb][Oo][Oo][Tt]\/?$' \"\$cmdpath\"; then\n        cmdpath=\"\${isodevice}/EFI/BOOT\"\n    fi\nfi\nconfigfile \"\${cmdpath}/grub.cfg\"\nEOF" > $HOME/LIVE_BOOT/tmp/grub-embed.cfg &&
+cp /usr/lib/ISOLINUX/isolinux.bin "${HOME}/LIVE_BOOT/staging/isolinux/" && cp /usr/lib/syslinux/modules/bios/* "${HOME}/LIVE_BOOT/staging/isolinux/" &&
+cp -r /usr/lib/grub/x86_64-efi/* "${HOME}/LIVE_BOOT/staging/boot/grub/x86_64-efi/" &&
+grub-mkstandalone -O i386-efi --modules="part_gpt part_msdos fat iso9660" --locales="" --themes="" --fonts="" --output="$HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTIA32.EFI" "boot/grub/grub.cfg=$HOME/LIVE_BOOT/tmp/grub-embed.cfg" &&
+grub-mkstandalone -O x86_64-efi --modules="part_gpt part_msdos fat iso9660" --locales="" --themes="" --fonts="" --output="$HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTx64.EFI" "boot/grub/grub.cfg=$HOME/LIVE_BOOT/tmp/grub-embed.cfg" &&
+(cd $HOME/LIVE_BOOT/staging && dd if=/dev/zero of=efiboot.img bs=1M count=20 && mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT && mcopy -vi efiboot.img $HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTIA32.EFI $HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTx64.EFI $HOME/LIVE_BOOT/staging/boot/grub/grub.cfg ::/EFI/BOOT/) &&
+xorriso -as mkisofs -iso-level 3 -o "${HOME}/LIVE_BOOT/$ISONAME.iso" -full-iso9660-filenames -volid "$LABEL" --mbr-force-bootable -partition_offset 16 -joliet -joliet-long -rational-rock -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -eltorito-boot isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table --eltorito-catalog isolinux/isolinux.cat -eltorito-alt-boot -e --interval:appended_partition_2:all:: -no-emul-boot -isohybrid-gpt-basdat -append_partition 2 C12A7328-F81F-11D2-BA4B-00A0C93EC93B ${HOME}/LIVE_BOOT/staging/efiboot.img "${HOME}/LIVE_BOOT/staging"
+cp $HOME/LIVE_BOOT/$ISONAME.iso $HOME/$ISONAME.iso
+chmod 755 $ISONAME.iso
+rm -r $HOME/LIVE_BOOT/
+echo "$ISONAME.iso is located in $HOME. Enjoy!
