@@ -11,14 +11,13 @@ Be sure the installed kernel supports aufs
 
 Inside the makelive script there are three variables. Change their values to your preference using a text editor.
 
-Be sure the script is executable and you are either logged in as root or you are on the terminal under su
+Make the script executable, log in terminal as super user and execute. It will take time.
 
 chmod +x makelive
 
 su password
 
-
-To use it just ./makelive
+./makelive
 
 Give it time and it will make a live bootable iso of your current install directly into your home folder.
 
