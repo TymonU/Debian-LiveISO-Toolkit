@@ -14,7 +14,9 @@ Inside the makelive script there are three variables. Change their values to you
 Be sure the script is executable and you are either logged in as root or you are on the terminal under su
 
 chmod +x makelive
+
 su password
+
 
 To use it just ./makelive
 
