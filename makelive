@@ -6,7 +6,9 @@
 # 
 # Run script as root or under su in terminal
 # Variables for computer name, iso name and volume label
+# USERNAME must be all lowercase
 HOSTNAME=debian-live
+USERNAME=debian-user
 ISONAME=debian-live
 LABEL=DEBLIVE
 mkdir -p $HOME/LIVE_BOOT $HOME/LIVE_BOOT/chroot &&
@@ -14,6 +16,7 @@ rsync -aAXv --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost
 printf "" > $HOME/LIVE_BOOT/chroot/etc/fstab && printf "" > $HOME/LIVE_BOOT/chroot/etc/resolv.conf &&
 echo "$HOSTNAME" > $HOME/LIVE_BOOT/chroot/etc/hostname &&
 mkdir -p $HOME/LIVE_BOOT/{staging/{EFI/BOOT,boot/grub/x86_64-efi,isolinux,live},tmp} &&
+# Add options for enabling plymouth splash screen on load
 mksquashfs $HOME/LIVE_BOOT/chroot $HOME/LIVE_BOOT/staging/live/filesystem.squashfs -e boot &&
 cp $HOME/LIVE_BOOT/chroot/boot/vmlinuz-* $HOME/LIVE_BOOT/staging/live/vmlinuz && cp $HOME/LIVE_BOOT/chroot/boot/initrd.img-* $HOME/LIVE_BOOT/staging/live/initrd &&
 touch $HOME/LIVE_BOOT/staging/isolinux/isolinux.cfg  &&
@@ -28,8 +31,12 @@ cp -r /usr/lib/grub/x86_64-efi/* "${HOME}/LIVE_BOOT/staging/boot/grub/x86_64-efi
 grub-mkstandalone -O i386-efi --modules="part_gpt part_msdos fat iso9660" --locales="" --themes="" --fonts="" --output="$HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTIA32.EFI" "boot/grub/grub.cfg=$HOME/LIVE_BOOT/tmp/grub-embed.cfg" &&
 grub-mkstandalone -O x86_64-efi --modules="part_gpt part_msdos fat iso9660" --locales="" --themes="" --fonts="" --output="$HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTx64.EFI" "boot/grub/grub.cfg=$HOME/LIVE_BOOT/tmp/grub-embed.cfg" &&
 (cd $HOME/LIVE_BOOT/staging && dd if=/dev/zero of=efiboot.img bs=1M count=20 && mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT && mcopy -vi efiboot.img $HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTIA32.EFI $HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTx64.EFI $HOME/LIVE_BOOT/staging/boot/grub/grub.cfg ::/EFI/BOOT/) &&
+# CHROOT bits go here for making live user aka SUDO user with no password 
+# Need check for Display Manager being used for autologin 
+# Make this an option for making the iso more distributable
 xorriso -as mkisofs -iso-level 3 -o "${HOME}/LIVE_BOOT/$ISONAME.iso" -full-iso9660-filenames -volid "$LABEL" --mbr-force-bootable -partition_offset 16 -joliet -joliet-long -rational-rock -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -eltorito-boot isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table --eltorito-catalog isolinux/isolinux.cat -eltorito-alt-boot -e --interval:appended_partition_2:all:: -no-emul-boot -isohybrid-gpt-basdat -append_partition 2 C12A7328-F81F-11D2-BA4B-00A0C93EC93B ${HOME}/LIVE_BOOT/staging/efiboot.img "${HOME}/LIVE_BOOT/staging"
-cp $HOME/LIVE_BOOT/$ISONAME.iso $HOME/$ISONAME.iso
-chmod 755 $ISONAME.iso
+mkdir /home/$USERNAME
+cp $HOME/LIVE_BOOT/$ISONAME.iso /home/$USERNAME/$ISONAME.iso
+chmod 755 /home/$USERNAME/$ISONAME.iso
 rm -r $HOME/LIVE_BOOT/
-echo "$ISONAME.iso is located in $HOME. Enjoy!
+echo "$ISONAME.iso is located in /home/$USERNAME. Enjoy!"
