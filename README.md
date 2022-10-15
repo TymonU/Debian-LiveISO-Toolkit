@@ -1,5 +1,7 @@
 # Debian-Live-Script
-Small script to make a live iso from debian based installs. 
+Small script to make a live ISO from debian based installs. This is NOT a fork of other liveISO creators.
+
+ISO will be left in in the USERNAME folder in /home.
 
 Be sure to install all the depends. 
 
@@ -9,7 +11,7 @@ apt install rsync live-boot systemd-sysv debootstrap squashfs-tools xorriso isol
 
 Be sure the installed kernel supports aufs
 
-Inside the makelive script there are three variables. Change their values to your preference using a text editor.
+Inside the makelive script there are four variables. Change their values to your preference using a text editor.
 
 Make the script executable, log in terminal as super user and execute. It will take time.
 
@@ -19,8 +21,12 @@ su password
 
 ./makelive
 
-Give it time and it will make a live bootable iso of your current install directly into your home folder.
+Give it time and the ISO will be in a /home folder of the USERNAME defined in the makelive script file. debian-user by default.
 
 Enjoy!
 
-P.S. It does not care what DE you are using. 
+Upcoming features:
+- Optional creation of a live user that has sudo privilages and no password
+- Optional enabling of Plymouth Splash Boot Screen
+- Installer
+- GUI to make it all point and click
