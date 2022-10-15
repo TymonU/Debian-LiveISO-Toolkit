@@ -1,8 +1,6 @@
 # Debian-Live-Script
 Small script to make a live ISO from debian based installs. This is NOT a fork of other liveISO creators.
 
-ISO will be left in in the USERNAME folder in /home.
-
 Be sure to install all the depends. 
 
 Depends: Install command
