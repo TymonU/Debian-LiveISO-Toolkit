@@ -1,5 +1,5 @@
 # Debian-Live-Script
-Small script to make a live ISO from debian based installs. This is NOT a fork of other liveISO creators.
+Small script to make a live ISO from debian based installs. This is NOT a fork of other liveISO creators. Remastersys was the best of the lot of them and it is no longer working. The forks are no longer supported. Systembak is broken. I have never been able to get Linux-Live to work.
 
 Be sure to install all the depends. 
 
