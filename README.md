@@ -1,6 +1,8 @@
 # Debian-LiveISO-Toolkit
 Currently a small script to make a live ISO from debian based installs. This is NOT a fork of other liveISO creators. Remastersys was the best of the lot of them and it is no longer working. The forks are no longer supported. Systembak is broken. I have never been able to get Linux-Live to work.
 
+Currently is a full backup of the current install. Options for making it more distributable will be available as this is worked on.
+
 Be sure to install all the depends. 
 
 Depends: Install command
