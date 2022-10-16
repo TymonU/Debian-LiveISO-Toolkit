@@ -26,7 +26,7 @@ The ISO created will work on a USB. Balena Etcher or Unetbootin work fine.
 
 Enjoy!
 
-Upcoming features:
+Upcoming features (as I get to adding them):
 - Optional creation of a live user that has sudo privilages and no password
 - Optional enabling of Plymouth Splash Boot Screen
 - Option for automatic user settings backup to skel to use on all new users
