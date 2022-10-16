@@ -22,6 +22,7 @@ su password
 ./makelive
 
 Give it time and the ISO will be in a /home folder of the USERNAME defined in the makelive script file. debian-user by default.
+The ISO created will work on a USB. Balena Etcher or Unetbootin work fine.
 
 Enjoy!
 
