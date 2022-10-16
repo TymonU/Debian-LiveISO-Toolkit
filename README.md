@@ -5,7 +5,7 @@ Be sure to install all the depends.
 
 Depends: Install command
 
-apt install rsync live-boot systemd-sysv debootstrap squashfs-tools xorriso isolinux syslinux-efi grub-pc-bin grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools resolvconf
+apt install rsync live-boot systemd-sysv debootstrap squashfs-tools xorriso isolinux syslinux-efi grub-pc-bin grub-efi-amd64-bin grub-efi-ia32-bin mtools dosfstools resolvconf gparted
 
 Be sure the installed kernel supports aufs
 
@@ -26,5 +26,6 @@ Enjoy!
 Upcoming features:
 - Optional creation of a live user that has sudo privilages and no password
 - Optional enabling of Plymouth Splash Boot Screen
-- Installer
-- GUI to make it all point and click
+- Installer to install live running OS created by script.
+- Optional GUI to make it all point and click
+- Deb package and icon to make it installable and runable as command or from menu
