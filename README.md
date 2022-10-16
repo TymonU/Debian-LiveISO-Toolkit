@@ -26,7 +26,8 @@ Enjoy!
 Upcoming features:
 - Optional creation of a live user that has sudo privilages and no password
 - Optional enabling of Plymouth Splash Boot Screen
+- Option for automatic user settings backup to skel to use on all new users
 - Option to enable persistance
-- Installer to install live running OS created by script.
+- Installer to install live running OS created by script
 - Optional GUI to make it all point and click
 - Deb package and icon to make it installable and runable as command or from menu
