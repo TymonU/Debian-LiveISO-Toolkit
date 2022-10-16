@@ -24,8 +24,6 @@ su password
 Give it time and the ISO will be in a /home folder of the USERNAME defined in the makelive script file. debian-user by default.
 The ISO created will work on a USB. Balena Etcher or Unetbootin work fine.
 
-Enjoy!
-
 Upcoming features (as I get to adding them):
 - Optional creation of a live user that has sudo privilages and no password
 - Optional enabling of Plymouth Splash Boot Screen
@@ -34,3 +32,6 @@ Upcoming features (as I get to adding them):
 - Option for automatic user settings backup to skel to use on all new users
 - Optional GUI to make it all point and click
 - Deb package and icon to make it installable and runable as command or from menu
+
+
+Enjoy!
