@@ -30,7 +30,7 @@ cp /usr/lib/ISOLINUX/isolinux.bin "${HOME}/LIVE_BOOT/staging/isolinux/" && cp /u
 cp -r /usr/lib/grub/x86_64-efi/* "${HOME}/LIVE_BOOT/staging/boot/grub/x86_64-efi/" &&
 grub-mkstandalone -O i386-efi --modules="part_gpt part_msdos fat iso9660" --locales="" --themes="" --fonts="" --output="$HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTIA32.EFI" "boot/grub/grub.cfg=$HOME/LIVE_BOOT/tmp/grub-embed.cfg" &&
 grub-mkstandalone -O x86_64-efi --modules="part_gpt part_msdos fat iso9660" --locales="" --themes="" --fonts="" --output="$HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTx64.EFI" "boot/grub/grub.cfg=$HOME/LIVE_BOOT/tmp/grub-embed.cfg" &&
-(cd $HOME/LIVE_BOOT/staging && dd if=/dev/zero of=efiboot.img bs=1M count=20 && mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT && mcopy -vi efiboot.img $HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTIA32.EFI $HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTx64.EFI $HOME/LIVE_BOOT/staging/boot/grub/grub.cfg ::/EFI/BOOT/) &&
+(cd $HOME/LIVE_BOOT/staging && dd if=/dev/zero of=efiboot.img bs=1M count=20 && sudo mkfs.vfat efiboot.img && mmd -i efiboot.img ::/EFI ::/EFI/BOOT && mcopy -vi efiboot.img $HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTIA32.EFI $HOME/LIVE_BOOT/staging/EFI/BOOT/BOOTx64.EFI $HOME/LIVE_BOOT/staging/boot/grub/grub.cfg ::/EFI/BOOT/) &&
 # CHROOT bits go here for making live user aka SUDO user with no password 
 # Need check for Display Manager being used for autologin 
 # Make this an option for making the iso more distributable
