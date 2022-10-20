@@ -13,7 +13,7 @@ ISONAME=debian-live
 LABEL=DEBLIVE
 mkdir -p $HOME/LIVE_BOOT $HOME/LIVE_BOOT/chroot &&
 rsync -aAXv --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found,$HOME/LIVE_BOOT/*} /* $HOME/LIVE_BOOT/chroot &&
-printf "" > $HOME/LIVE_BOOT/chroot/etc/fstab && printf "" > $HOME/LIVE_BOOT/chroot/etc/resolv.conf &&
+#printf "" > $HOME/LIVE_BOOT/chroot/etc/fstab && printf "" > $HOME/LIVE_BOOT/chroot/etc/resolv.conf &&
 echo "$HOSTNAME" > $HOME/LIVE_BOOT/chroot/etc/hostname &&
 mkdir -p $HOME/LIVE_BOOT/{staging/{EFI/BOOT,boot/grub/x86_64-efi,isolinux,live},tmp} &&
 # Add options for enabling plymouth splash screen on load
